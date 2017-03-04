@@ -17,21 +17,43 @@ RSpec.describe 'Books', type: :request do
         # Before any test, let's create our 3 books
         before { books }
         
-        context 'default behavior' do 
-            before { get '/api/books' }
-            
-            it 'receives HTTP status 200' do
-                get '/api/books'
-                expect(response.status).to eq 200
+        describe 'field_picking' do
+            context 'with the fields parameter' do
+                before { get '/api/books?fields=id,title,author_id' }
+                
+                it 'get books with only the id, title, and author_id keys' do
+                    json_body['data'].each do |book|
+                        expect(book.keys).to eq ["id", "title", "author_id"]
+                    end
+                end
+            end
+                    
+            context 'default behavior' do 
+                before { get '/api/books' }
+                
+                it 'receives HTTP status 200' do
+                    get '/api/books'
+                    expect(response.status).to eq 200
+                end
+                
+                it 'receives a json with the "data" root key' do
+                    expect(json_body['data']).to_not be nil 
+                end
+                
+                it 'receives all 3 books' do
+                    expect(json_body['data'].size).to eq 3
+                end
+            end
+        
+            context 'without the "fields" parameter' do
+                before { get '/api/books' }
+                it 'gets book with all the fields specified in the presenter' do
+                    json_body['data'].each do |book| 
+                        expect(book.keys).to eq BookPresenter.build_attributes.map(&:to_s)
+                    end
+                end
             end
             
-            it 'receives a json with the "data" root key' do
-                expect(json_body['data']).to_not be nil 
-            end
-            
-            it 'receives all 3 books' do
-                expect(json_body['data'].size).to eq 3
-            end
         end
     end
 end
