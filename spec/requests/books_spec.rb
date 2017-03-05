@@ -16,7 +16,7 @@ RSpec.describe 'Books', type: :request do
     describe 'GET /api/books' do
         # Before any test, let's create our 3 books
         before { books }
-        
+
         describe 'field_picking' do
             context 'with the fields parameter' do
                 before { get '/api/books?fields=id,title,author_id' }
@@ -53,7 +53,46 @@ RSpec.describe 'Books', type: :request do
                     end
                 end
             end
+        end
+        
+        describe 'pagination' do
+            context 'when asking for the first page' do
+                before { get('/api/books?page=1&per=2') }
+                
+                it 'receives HTTP status 200' do
+                    expect(response.status).to eq 200
+                end
+                
+                it 'receives only two books' do
+                    expect(json_body['data'].size).to eq 2
+                end
+                
+                it 'receives a response with the Link header' do
+                    expect(response.headers['Link'].split(', ').first).to eq(
+                        '<http://www.example.com/api/books?page=2&per=2>; rel="next"'
+                    )
+                end
+            end
             
+            context 'when asking for the second page' do
+                before { get('/api/books?page=2&per=2') }
+                
+                it 'receives HTTP status 200' do
+                    expect(response.status).to eq 200
+                end
+                
+                it 'receives only one book' do
+                    expect(json_body['data'].size).to eq 1
+                end
+            end
+            
+            context 'when sending invalid "page" and "per" parameters' do
+                before { get('/api/books?page=fake&per=10') }
+                
+                it 'receives HTTP status 400' do
+                    expect(response.status).to eq 400
+                end
+            end
         end
     end
 end
