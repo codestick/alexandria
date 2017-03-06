@@ -6,6 +6,8 @@ RSpec.describe 'FieldPicker' do
     #specific context
     let(:rails_tutorial){ create(:ruby_on_rails_tutorial) }
     let(:params){ { fields: 'id,title,subtitle' } }
+    let(:presenter) { BookPresenter.new(rails_tutorial, params) }
+    let(:field_picker) { FieldPicker.new(presenter) }
     #We dont want our tests to rely too much on the actual implementation of
     #the book presenter. Instead, we stub the method 'build_attributes'
     #on BookPresenter to always return the same list of attributes for
