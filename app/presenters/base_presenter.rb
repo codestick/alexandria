@@ -1,4 +1,6 @@
 class BasePresenter
+    include Rails.application.routes.url_helpers
+    
     # define a class level instance variables
     @relations = []
     @sort_attributes = []
