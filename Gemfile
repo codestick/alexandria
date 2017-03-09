@@ -6,14 +6,12 @@ git_source(:github) do |repo_name|
 end
 
 gem 'rails', '~> 5.0.2'
-gem 'sqlite3'
+gem 'pg'
 gem 'puma', '~> 3.0'
-
-# We add those two gems - for image storage in api
 gem 'carrierwave'
 gem 'carrierwave-base64'
-
 gem 'kaminari'
+gem 'pg_search'
 
 group :development, :test do
   gem 'byebug', platform: :mri
